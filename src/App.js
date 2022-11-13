@@ -1,6 +1,6 @@
 import React, { useRef, useState} from 'react';
 import './App.css';
-import firebase from 'firebase/compat/app';
+import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 
@@ -20,7 +20,7 @@ firebase.initializeApp({
 
 const auth = firebase.auth();
 const firestore = firebase.firestore();
-const analytics = firebase.analytics();
+// const analytics = firebase.analytics();
 
 
 function App() {
@@ -29,10 +29,10 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-      </header>
+      <header className="App">
         <h1>⚛️🔥💬</h1>
-        <SignOut></SignOut>
+        <SignOut />
+      </header>
       <section>
         {user ? <ChatRoom /> : <SignIn />}
       </section>
@@ -48,7 +48,7 @@ function SignIn() {
 
   return (
     <>
-      <button className='sign=in' onClick={signInWithGoogle}>Sign in with Google</button>
+      <button className='sign-in' onClick={signInWithGoogle}>Sign in with Google</button>
       <p>Do not violate the community guidelines or you will be banned for life!</p>
     </>
   )
@@ -90,7 +90,7 @@ function ChatRoom() {
       {messages && messages.map(msg => <ChatMessage key={msg.id} message={msg}/>)}  
       <span ref={dummy}></span>
     </main>  
-  <form onSumbit={sendMessage}>
+  <form onSubmit={sendMessage}>
       <input value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="say something nice"></input>
 
       <button tuype="submit" disabled={!formValue}></button>
@@ -102,10 +102,10 @@ function ChatRoom() {
 function ChatMessage(props) {
   const { text, uid, photoURL } = props.message;
 
-  const messageClass = uid == auth.currentUser.uid ? 'sent' : 'received';
+  const messageClass = uid === auth.currentUser.uid ? 'sent' : 'received';
 
   return (<>
-    <div className={`message $(messageClass)`}>
+    <div className={`message ${messageClass}`}>
       <img src={photoURL || 'https://api.adorable.io/avatars/23/abott@adorable.png'}></img>
       <p>{text}</p>
     </div>
