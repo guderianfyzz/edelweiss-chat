@@ -7,6 +7,8 @@ import 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
+import { Ed25519Keypair, JsonRpcProvider, RawSigner } from '@mysten/sui.js';
+
 firebase.initializeApp({
   apiKey: "AIzaSyDby2m0uOBKcOgGtGWP6Vw3koVj18ZjDJU",
   authDomain: "atem-test.firebaseapp.com",
@@ -21,6 +23,33 @@ firebase.initializeApp({
 const auth = firebase.auth();
 const firestore = firebase.firestore();
 // const analytics = firebase.analytics();
+const provider = new JsonRpcProvider();
+
+function callFun() {
+  const keypair = new Ed25519Keypair();
+  const provider2 = new JsonRpcProvider();
+  const signer = new RawSigner(keypair, provider);
+  // console.log({keypair});
+  // console.log({provider2});
+  // console.log({signer});
+
+  // console.log('hello world');
+
+  const moveCallTxn = signer.executeMoveCall({
+    packageObjectId: '0x0702dbaded6e93d996be20859cd3a2d567668b23',
+    module: 'write',
+    function: 'create_message',
+    typeArguments: [],
+    arguments: [
+      'tMessage2',
+      12315,
+      'test',
+    ],
+    gasBudget: 10000,
+  }).then(e => console.log(e));
+  
+   console.log('moveCallTxn', moveCallTxn);
+}
 
 
 function App() {
@@ -60,7 +89,7 @@ function SignOut() {
   )
 }
 
-function ChatRoom() {
+ function ChatRoom() {
   const dummy = useRef();
   const messageRef = firestore.collection('message');
   const query = messageRef.orderBy('createdAt').limit(25);
@@ -84,6 +113,13 @@ function ChatRoom() {
     setFormValue('');
     dummy.current.scrollIntoView({ behavior: 'smooth'});
   }
+
+  const objects = provider.getObjectsOwnedByAddress('0x8eac71ad5847ae1809f7ee21d6ea05768ba73eaf').then( o =>
+    console.log({o})
+  );
+
+  console.log("run call fun");
+  callFun();
 
   return (<>
     <main>
